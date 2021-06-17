@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+
+<body>
+
+<canvas id="myCanvas" width="200" height="100" style="border:1px solid #000000;">
+Your browser does not support the HTML canvas tag.
+</canvas>
+<button id="startButton" width="100" heigth=50>
+Start
+</button>
+
+</body>
+
+<script>
+
+	let canvas = document.getElementById("myCanvas");
+    let button = document.getElementById("startButton");
+
+	const alive = 1;
+	const dead = 0;
+	
+    const fieldWidth = 10;
+    const fieldHeight = 10;
+    
+    const fieldCountWidth = canvas.width / fieldWidth;
+	const fieldCountHeigth = canvas.height / fieldHeight;
+  
+	let CurrentFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));
+    
+    let context = canvas.getContext("2d");
+
+    function normaliseScreen(x,y) {
+        return {
+                x: Math.floor(x / fieldWidth) * fieldWidth,
+                y: Math.floor(x / fieldHeight) * fieldHeight
+                }
+    }
+
+    function screenToIndex(x,y) {
+        return {
+                x: Math.floor(x / fieldWidth),
+                y: Math.floor(x / fieldHeight)
+                }
+    }
+
+    function indexToScreen(x,y) {
+        return {
+                x: x * fieldWidth,
+                y: y * fieldHeight
+                }
+    }
+
+    function drawToCanvas(pos, state) {
+        if (state = alive) {
+            context.fillStyle = 'green';
+        } else {
+            context.fillStyle = 'white';
+        }
+        context.fillRect(pos.x, pos.y, fieldWidth, fieldHeight);
+    }
+
+    const posTupel = [
+            [-1, -1],
+            [-1,  0],
+            [-1,  1],
+            [ 0, -1],
+            [ 0,  1],
+            [ 1, -1],
+            [ 1,  0],
+            [ 1,  1],
+        ];
+
+    function isInArr(offset, arr, x, y)  {
+
+    }   
+
+    function countNeighbours(arr, x, y) {
+        let count = 0;
+        posTupel.forEach((offset) => {
+            if (isInArr(offset, arr, x, y)) {
+                if (arr[y + offset[0]][x + offset[0]] = alive) {
+                    count++;
+                }
+            }   
+        });
+    }
+
+    function showNext() {
+        let NextFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));;
+
+        CurrentFields.forEach((value, indexY) => {
+            CurrentFields[indexY].forEach((value, indexX) => {
+                let count = countNeighbours(CurrentFields, indexX, indexY);  
+                
+                if (count < 2) {    
+                    NextFields[indexY][indexX] = dead;  
+                } else if (count = 3){
+                    NextFields[indexY][indexX] = alive; 
+                } else if (count >= 4){
+                    NextFields[indexY][indexX] = dead;  
+                }
+            })
+        });   
+      
+        NextFields.forEach((value, indexY) => {
+            NextFields[indexY].forEach((value, indexX) => {
+                if (NextFields[indexY][indexX] = alive) {
+
+                }
+          })
+      }) 
+      CurrentFields = NextFields;
+    }
+	
+    canvas.addEventListener('click', function (event) {
+        console.log('offsetX: ' + event.offsetX);
+        console.log('offsetY: ' + event.offsetY);
+
+        let pos = normaliseScreen(event.offsetX, event.offsetY);
+        let index = screenToIndex(pos.x, pos.y);
+
+        drawToCanvas(pos, alive);
+        CurrentFields[index.y][index.x] = alive;
+
+        console.log(CurrentFields);
+    })
+
+    // button.addEventListener('click', setInterval(showNext, 500));
+
+    
+
+
+
+</script>
+
+
+</html>
