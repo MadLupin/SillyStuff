@@ -36,14 +36,14 @@ Start
     function normaliseScreen(x,y) {
         return {
                 x: Math.floor(x / fieldWidth) * fieldWidth,
-                y: Math.floor(x / fieldHeight) * fieldHeight
+                y: Math.floor(y / fieldHeight) * fieldHeight
                 }
     }
 
     function screenToIndex(x,y) {
         return {
                 x: Math.floor(x / fieldWidth),
-                y: Math.floor(x / fieldHeight)
+                y: Math.floor(y / fieldHeight)
                 }
     }
 
@@ -74,20 +74,18 @@ Start
             [ 1,  1],
         ];
 
-    function isInArr(offset, arr, x, y)  {
-
-    }   
-
     function countNeighbours(arr, x, y) {
         let count = 0;
         posTupel.forEach((offset) => {
-            if (isInArr(offset, arr, x, y)) {
-                if (arr[y + offset[0]][x + offset[0]] = alive) {
-                    count++;
-                }
-            }   
+            if (((offset[1] + y) > 0) && ((offset[1] + y) < arr.length) &&
+                ((offset[0] + x) > 0) && ((offset[0] + x) < arr[y].length)) {
+                
+                let val = arr[y + offset[1]][x + offset[0]];
+                count++;
+            } 
         });
-    }
+        return count;
+    };
 
     function showNext() {
         let NextFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));;
@@ -108,9 +106,10 @@ Start
       
         NextFields.forEach((value, indexY) => {
             NextFields[indexY].forEach((value, indexX) => {
-                if (NextFields[indexY][indexX] = alive) {
-
-                }
+                drawToCanvas(
+                    indexToScreen(indexX, indexY),
+                    value
+                );
           })
       }) 
       CurrentFields = NextFields;
@@ -127,9 +126,11 @@ Start
         CurrentFields[index.y][index.x] = alive;
 
         console.log(CurrentFields);
-    })
+    });
 
-    // button.addEventListener('click', setInterval(showNext, 500));
+    button.addEventListener('click', function(){
+        setInterval(showNext, 500);
+    });
 
     
 
