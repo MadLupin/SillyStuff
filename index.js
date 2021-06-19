@@ -6,10 +6,10 @@ const alive = 1;
 const dead = 0;
 
 const fieldWidth = 10;
-const fieldHeight = 10;
+const fieldHeigth = 10;
 
 const fieldCountWidth = canvas.width / fieldWidth;
-const fieldCountHeigth = canvas.height / fieldHeight;
+const fieldCountHeigth = canvas.height / fieldHeigth;
 
 let CurrentFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));
 
@@ -18,21 +18,21 @@ let context = canvas.getContext("2d");
 function normaliseScreen(x,y) {
     return {
             x: Math.floor(x / fieldWidth) * fieldWidth,
-            y: Math.floor(y / fieldHeight) * fieldHeight
+            y: Math.floor(y / fieldHeigth) * fieldHeigth
             }
 }
 
 function screenToIndex(x,y) {
     return {
             x: Math.floor(x / fieldWidth),
-            y: Math.floor(y / fieldHeight)
+            y: Math.floor(y / fieldHeigth)
             }
 }
 
 function indexToScreen(x,y) {
     return {
             x: x * fieldWidth,
-            y: y * fieldHeight
+            y: y * fieldHeigth
             }
 }
 
@@ -42,7 +42,7 @@ function drawToCanvas(pos, state) {
     } else {
         context.fillStyle = 'white';
     }
-    context.fillRect(pos.x, pos.y, fieldWidth, fieldHeight);
+    context.fillRect(pos.x, pos.y, fieldWidth, fieldHeigth);
 }
 
 const posTupel = [
@@ -72,6 +72,7 @@ function countAliveNeighbours(arr, x, y) {
 };
 
 function showNext() {
+
     let NextFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));;
 
     CurrentFields.forEach((value, indexY) => {
@@ -103,9 +104,35 @@ function showNext() {
       })
   }) 
   CurrentFields = NextFields;
+  drawGrid();
 }
 
-let startGame = function() { 
+function drawGrid() {
+    let w = canvas.width;
+    let h = canvas.height;
+
+    context.beginPath();
+    for (let x = 0; x <= w; x += fieldWidth) {
+        context.moveTo(x, 0);
+        context.lineTo(x, h);
+    }
+    context.strokeStyle = 'grey';
+    context.lineWidth = 1;    
+    context.stroke();
+
+
+    context.beginPath();
+    for (let y = 0; y <= h; y += fieldHeigth) {
+        context.moveTo(0, y);
+        context.lineTo(w, y);
+    }
+    context.strokeStyle = 'grey';
+    context.lineWidth = 1;
+    context.stroke();
+
+}
+
+let startGame = function(){
     setInterval(showNext, 100);
 }
 
@@ -120,11 +147,21 @@ canvas.addEventListener('click', function (event) {
     let pos = normaliseScreen(event.offsetX, event.offsetY);
     let index = screenToIndex(pos.x, pos.y);
 
-    drawToCanvas(pos, alive);
-    CurrentFields[index.y][index.x] = alive;
-
+    switch (CurrentFields[index.y][index.x]) {
+        case alive:
+            CurrentFields[index.y][index.x] = dead;
+            break;
+        case dead:
+            CurrentFields[index.y][index.x] = alive;
+            break;    
+        default:
+            break;
+    }
+    drawToCanvas(pos, CurrentFields[index.y][index.x]);
+    drawGrid();
     console.log(CurrentFields);
 });
 
 startButton.addEventListener('click', startGame);
-closeButton.addEventListener('click', endGame);
+closeButton.addEventListener('click', drawGrid);
+drawGrid();
