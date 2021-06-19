@@ -11,6 +11,8 @@ const fieldHeigth = 10;
 const fieldCountWidth = canvas.width / fieldWidth;
 const fieldCountHeigth = canvas.height / fieldHeigth;
 
+const intervalTime = 200;
+
 let CurrentFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));
 
 let context = canvas.getContext("2d");
@@ -133,7 +135,7 @@ function drawGrid() {
 }
 
 let startGame = function(){
-    setInterval(showNext, 100);
+    setInterval(showNext, intervalTime);
 }
 
 let endGame = function() {
