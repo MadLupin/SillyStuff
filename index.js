@@ -133,13 +133,13 @@ function drawGrid() {
     context.stroke();
 
 }
-
+let interval;
 let startGame = function(){
-    setInterval(showNext, intervalTime);
+    interval = setInterval(showNext, intervalTime);
 }
 
 let endGame = function() {
-    clearInterval(startGame);
+    clearInterval(interval);
 }
 
 canvas.addEventListener('click', function (event) {
@@ -165,5 +165,5 @@ canvas.addEventListener('click', function (event) {
 });
 
 startButton.addEventListener('click', startGame);
-closeButton.addEventListener('click', drawGrid);
+closeButton.addEventListener('click', endGame);
 drawGrid();

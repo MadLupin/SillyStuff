@@ -1,0 +1,10 @@
+CSS naming Convention BEM
+
+// no camel case naming, stay to lower case and divide long names with a '-'
+nav-selector
+
+// if the class is a part of a larger thing add its property name with '__'
+nav-selector__head--small
+
+// if it's a different kind of thing for the same task, write it's defining different Attribute with '--'
+nav-selector__head--big

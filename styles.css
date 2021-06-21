@@ -58,3 +58,39 @@
       height: auto;
     }
   }
+
+
+
+  div{
+    display: flex;
+  }
+
+  .game-of-life {
+    flex-direction: row;
+  }
+
+  .game-of-life-organiser {
+    flex-direction: column;
+    background-color: darkslategray;
+    margin: 10px;
+    padding: 20px;
+    font-size: 20px;
+  }
+
+  .game-of-life__controls { 
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    margin: 5px 0px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    width : 100%;
+    height: 50px;
+  }
+
+  .game-of-life__controls:hover {
+    background-color: #88ca8a;  
+  }

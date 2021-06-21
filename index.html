@@ -19,19 +19,27 @@
         </nav>
 
         <article>
-            <div id="Gamepanel">
-
-                <canvas id="myCanvas" width="600" height="600" style="border:1px solid #000000;">
-                </canvas>
-        
-                <button id="startButton" width="100" heigth=50>
-                    Start
-                </button>
-        
-                <button id="closeButton" width="100" heigth=50>
-                    Ende
-                </button>
-        
+            <div class="game-of-life" id="Gamepanel">
+                <div class="game-of-life-organiser">
+                    <canvas id="myCanvas" width="600" height="600" style="border:1px solid #000000;">
+                    </canvas>
+                </div>
+                
+                <div class="game-of-life-organiser">
+                    <div>
+                        <button id="startButton" class="game-of-life__controls">
+                            Start
+                        </button>
+                    </div>
+                    <div>
+                        <button id="closeButton" class="game-of-life__controls">
+                            Ende
+                        </button>
+                    </div>
+                    <div class="game-of-life__controls">1</div>
+                    <div class="game-of-life__controls">2</div>
+                    <div class="game-of-life__controls">3</div>  
+                </div>
             </div>
         
         </article>
