@@ -1,33 +1,17 @@
+@import 'color-palet.css';
+
 * {
     box-sizing: border-box;
   }
   
   body {
     font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
   }
   
-  /* Style the header */
-  header {
-    background-color: #666;
-    padding: 30px;
-    text-align: center;
-    font-size: 35px;
-    color: white;
-  }
-  
-  /* Create two columns/boxes that floats next to each other */
-  nav {
-    float: left;
-    width: 30%;
-    background: #ccc;
-    padding: 20px;
-  }
-  
-  /* Style the list inside the menu */
-  nav ul {
-    list-style-type: none;
-    padding: 0;
-  }
+  div{
+    display: flex;
+  }  
   
   article {
     float: left;
@@ -60,9 +44,28 @@
   }
 
 
+  .main-menu{
+    background-color: var(--primary-color);
+    height: 5em;
+    margin: 0;
+    justify-content: center;    
+  }
 
-  div{
-    display: flex;
+  .main-menu__organiser{
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .main-menu__item{
+    justify-content: center;
+    align-items: center;
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+    margin: 0em 2em;
+    height: 80%;
   }
 
   .game-of-life {
@@ -71,7 +74,7 @@
 
   .game-of-life-organiser {
     flex-direction: column;
-    background-color: darkslategray;
+    background-color: (--light-green-color);
     margin: 10px;
     padding: 20px;
     font-size: 20px;
