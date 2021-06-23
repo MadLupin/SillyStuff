@@ -77,36 +77,38 @@ function showNext() {
 
     let NextFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));;
 
-    CurrentFields.forEach((value, indexY) => {
-        CurrentFields[indexY].forEach((value, indexX) => {
-            let count = countAliveNeighbours(CurrentFields, indexX, indexY);  
+    transformArray(CurrentFields, (indexX, indexY, value) => {
+        let count = countAliveNeighbours(CurrentFields, indexX, indexY);  
             
-            if (value == alive) {
-                if (count < 2) {    
-                    NextFields[indexY][indexX] = dead;  
-                } else if (count <= 3){
-                    NextFields[indexY][indexX] = alive; 
-                } else {
-                    NextFields[indexY][indexX] = dead;  
-                }
+        if (value == alive) {
+            if (count < 2) {    
+                NextFields[indexY][indexX] = dead;  
+            } else if (count <= 3){
+                NextFields[indexY][indexX] = alive; 
             } else {
-                if (count == 3) {
-                    NextFields[indexY][indexX] = alive; 
-                }
+                NextFields[indexY][indexX] = dead;  
             }
+        } else {
+            if (count == 3) {
+                NextFields[indexY][indexX] = alive; 
+            }
+        }        
+    })
+    
+    transformArray(NextFields, (indexX, indexY, value) => {
+        drawToCanvas(indexToScreen(indexX, indexY),value);
+    })
+
+    CurrentFields = NextFields;
+    drawGrid();
+}
+
+function transformArray(arr, onItem){
+    arr.forEach((_arr, indexY) => {
+        arr[indexY].forEach((value, indexX) => {
+            onItem(indexX, indexY, value)
         })
-    });   
-  
-    NextFields.forEach((value, indexY) => {
-        NextFields[indexY].forEach((value, indexX) => {
-            drawToCanvas(
-                indexToScreen(indexX, indexY),
-                value
-            );
-      })
-  }) 
-  CurrentFields = NextFields;
-  drawGrid();
+    });
 }
 
 function drawGrid() {
@@ -133,6 +135,11 @@ function drawGrid() {
     context.stroke();
 
 }
+
+function clearCanvas(){
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
 let interval;
 let startGame = function(){
     interval = setInterval(showNext, intervalTime);
@@ -143,8 +150,6 @@ let endGame = function() {
 }
 
 canvas.addEventListener('click', function (event) {
-    console.log('offsetX: ' + event.offsetX);
-    console.log('offsetY: ' + event.offsetY);
 
     let pos = normaliseScreen(event.offsetX, event.offsetY);
     let index = screenToIndex(pos.x, pos.y);
@@ -159,8 +164,15 @@ canvas.addEventListener('click', function (event) {
         default:
             break;
     }
-    drawToCanvas(pos, CurrentFields[index.y][index.x]);
+    clearCanvas();
+    
+    transformArray(CurrentFields, (x, y, value) => {
+        let indexPos = indexToScreen(x, y);    
+        drawToCanvas(indexPos, value);
+    });
+
     drawGrid();
+
     console.log(CurrentFields);
 });
 
