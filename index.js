@@ -5,8 +5,8 @@ let closeButton = document.getElementById("closeButton");
 const alive = 1;
 const dead = 0;
 
-const fieldWidth = 10;
-const fieldHeigth = 10;
+const fieldWidth = 25;
+const fieldHeigth = 25;
 
 const fieldCountWidth = canvas.width / fieldWidth;
 const fieldCountHeigth = canvas.height / fieldHeigth;
