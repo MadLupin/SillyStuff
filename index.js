@@ -1,4 +1,5 @@
 let canvas = document.getElementById("myCanvas");
+let canvasBackgroundColor = window.getComputedStyle( canvas.parentElement ,null).getPropertyValue('background-color'); 
 let startButton = document.getElementById("startButton");
 let closeButton = document.getElementById("closeButton"); 
 
@@ -42,7 +43,7 @@ function drawToCanvas(pos, state) {
     if (state == alive) {
         context.fillStyle = 'green';
     } else {
-        context.fillStyle = 'white';
+        context.fillStyle = canvasBackgroundColor;
     }
     context.fillRect(pos.x, pos.y, fieldWidth, fieldHeigth);
 }
