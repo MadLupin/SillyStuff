@@ -19,8 +19,8 @@
     <section>
 
         <article class="main-article">
-            <h1>
-                Willkommen 
+            <h1 class="header-articel">
+                Willkommen zu Conveys: "Game of Life"
             </h1>
             <p>
 
@@ -29,8 +29,8 @@
 
         <article>
             <div class="game-of-life" id="Gamepanel">
-                <div class="game-of-life-organiser">
-                    <canvas id="myCanvas" width="600" height="600" style="border:1px solid #000000;">
+                <div id="myContainer" class="game-of-life-organiser">
+                    <canvas id="myCanvas" class="game-of-life__canvas" width=500 height=500>
                     </canvas>
                 </div>
                 
@@ -42,12 +42,14 @@
                     </div>
                     <div>
                         <button id="closeButton" class="game-of-life__controls">
-                            Ende
+                            Pause
                         </button>
                     </div>
-                    <div class="game-of-life__controls">1</div>
-                    <div class="game-of-life__controls">2</div>
-                    <div class="game-of-life__controls">3</div>  
+                    <div>
+                        <button id="resetButton" class="game-of-life__controls">
+                            Reset
+                        </button>
+                    </div>
                 </div>
             </div>
         

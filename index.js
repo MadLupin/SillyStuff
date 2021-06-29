@@ -1,7 +1,10 @@
 let canvas = document.getElementById("myCanvas");
+let canvasContainer = document.getElementById("myContainer");
 let canvasBackgroundColor = window.getComputedStyle( canvas.parentElement ,null).getPropertyValue('background-color'); 
+
 let startButton = document.getElementById("startButton");
 let closeButton = document.getElementById("closeButton"); 
+let resetButton = document.getElementById("resetButton");
 
 const alive = 1;
 const dead = 0;
@@ -12,6 +15,7 @@ const fieldHeigth = 25;
 const fieldCountWidth = canvas.width / fieldWidth;
 const fieldCountHeigth = canvas.height / fieldHeigth;
 
+let interval;
 const intervalTime = 200;
 
 let CurrentFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));
@@ -43,7 +47,7 @@ function drawToCanvas(pos, state) {
     if (state == alive) {
         context.fillStyle = 'green';
     } else {
-        context.fillStyle = canvasBackgroundColor;
+        context.fillStyle = 'lightgrey';
     }
     context.fillRect(pos.x, pos.y, fieldWidth, fieldHeigth);
 }
@@ -141,13 +145,38 @@ function clearCanvas(){
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-let interval;
+function resizeCanvas(){
+    const resizeThreshold = [1200, 800, 500, 200];
+
+    for (let i = 0; i < resizeThreshold.length; i++) {
+        const element = resizeThreshold[i];
+        if (element <= window.innerWidth) {
+            canvas.width = element * 0.7;
+            canvas.height = element * 0.7;
+            break;
+        }
+    }
+}
+
 let startGame = function(){
     interval = setInterval(showNext, intervalTime);
 }
 
 let endGame = function() {
     clearInterval(interval);
+}
+
+let resetGame = function() {
+    endGame();
+        
+    let NextFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));;
+   
+    transformArray(NextFields, (indexX, indexY, value) => {
+        drawToCanvas(indexToScreen(indexX, indexY),value);
+    })
+
+    CurrentFields = NextFields;
+    drawGrid();    
 }
 
 canvas.addEventListener('click', function (event) {
@@ -179,4 +208,7 @@ canvas.addEventListener('click', function (event) {
 
 startButton.addEventListener('click', startGame);
 closeButton.addEventListener('click', endGame);
+resetButton.addEventListener('click', resetGame);
+window.addEventListener('resize', resizeCanvas);
+
 drawGrid();

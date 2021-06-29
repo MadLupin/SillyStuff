@@ -7,6 +7,7 @@
   body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
+    background-color: var(--blue-color-80);
   }
   
   div{
@@ -17,9 +18,14 @@
     float: left;
     padding: 20px;
     width: 100%;
-    background-color: var(--blue-color-80);
+    height: 100%;
+    margin: 0;
   }
   
+  section {
+    /* height : 100%; */
+  }
+
   /* Clear floats after the columns */
   section::after {
     content: "";
@@ -63,15 +69,15 @@
   }
 
   .game-of-life {
-    flex-direction: row;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .game-of-life-organiser {
-    flex-direction: column;
+    flex-direction: row;
     background-color: (--light-green-color);
-    margin: 10px;
-    padding: 20px;
-    font-size: 20px;
+    margin: 1em;
   }
 
   .game-of-life__controls { 
@@ -79,7 +85,7 @@
     border: none;
     color: white;
     padding: 15px 32px;
-    margin: 5px 0px;
+    margin: 5px 5px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -90,4 +96,12 @@
 
   .game-of-life__controls:hover {
     background-color: #88ca8a;  
+  }
+  
+  .game-of-life__canvas {
+    border:1px solid #000000;
+  }
+
+  .header-articel{
+    text-align: center;
   }
