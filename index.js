@@ -12,31 +12,41 @@ const dead = 0;
 const fieldWidth = 25;
 const fieldHeigth = 25;
 
-const fieldCountWidth = canvas.width / fieldWidth;
-const fieldCountHeigth = canvas.height / fieldHeigth;
-
 let interval;
 const intervalTime = 200;
 
 let CurrentFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));
+let totalAliveCount = 0;
 
 let context = canvas.getContext("2d");
 
-function normaliseScreen(x,y) {
-    return {
-            x: Math.floor(x / fieldWidth) * fieldWidth,
-            y: Math.floor(y / fieldHeigth) * fieldHeigth
-            }
-}
-
-function screenToIndex(x,y) {
+function getIndexByScreen(x,y) {
     return {
             x: Math.floor(x / fieldWidth),
             y: Math.floor(y / fieldHeigth)
             }
 }
 
-function indexToScreen(x,y) {
+function getHeightFieldCount() {
+    return canvas.height / fieldHeigth
+}
+
+function getWidthFieldCount() {
+    return canvas.width / fieldWidth;
+}
+
+function getNormalisedScreenPos(x,y) {
+    return {
+            x: Math.floor(x / fieldWidth) * fieldWidth,
+            y: Math.floor(y / fieldHeigth) * fieldHeigth
+            }
+}
+
+function getNewArray() {
+    return new Array(getHeightFieldCount).fill(dead).map(() => new Array(getWidthFieldCount).fill(dead));
+}
+
+function getPosByIndex(x,y) {
     return {
             x: x * fieldWidth,
             y: y * fieldHeigth
@@ -80,9 +90,10 @@ function countAliveNeighbours(arr, x, y) {
 
 function showNext() {
 
-    let NextFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));;
+    let NextFields = getNewArray();
+    totalAliveCount = 0;
 
-    transformArray(CurrentFields, (indexX, indexY, value) => {
+    iterate2dArray(CurrentFields, (indexX, indexY, value) => {
         let count = countAliveNeighbours(CurrentFields, indexX, indexY);  
             
         if (value == alive) {
@@ -90,25 +101,31 @@ function showNext() {
                 NextFields[indexY][indexX] = dead;  
             } else if (count <= 3){
                 NextFields[indexY][indexX] = alive; 
+                totalAliveCount++;
             } else {
                 NextFields[indexY][indexX] = dead;  
             }
         } else {
             if (count == 3) {
                 NextFields[indexY][indexX] = alive; 
+                totalAliveCount++;
             }
         }        
     })
     
-    transformArray(NextFields, (indexX, indexY, value) => {
-        drawToCanvas(indexToScreen(indexX, indexY),value);
+    iterate2dArray(NextFields, (indexX, indexY, value) => {
+        drawToCanvas(getPosByIndex(indexX, indexY),value);
     })
 
     CurrentFields = NextFields;
     drawGrid();
+
+    if (totalAliveCount == 0) {
+        endGame();
+    }
 }
 
-function transformArray(arr, onItem){
+function iterate2dArray(arr, onItem){
     arr.forEach((_arr, indexY) => {
         arr[indexY].forEach((value, indexX) => {
             onItem(indexX, indexY, value)
@@ -147,15 +164,24 @@ function clearCanvas(){
 
 function resizeCanvas(){
     const resizeThreshold = [1200, 800, 500, 200];
+    const resized = false;
 
     for (let i = 0; i < resizeThreshold.length; i++) {
         const element = resizeThreshold[i];
         if (element <= window.innerWidth) {
             canvas.width = element * 0.7;
             canvas.height = element * 0.7;
+            resized = true;
             break;
         }
     }
+
+    if (resized) {
+        drawGrid();
+        iterate2dArray(CurrentFields, (indexX, indexY, value) => {
+            drawToCanvas(getPosByIndex(indexX, indexY),value)
+        })
+    } 
 }
 
 let startGame = function(){
@@ -171,8 +197,8 @@ let resetGame = function() {
         
     let NextFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));;
    
-    transformArray(NextFields, (indexX, indexY, value) => {
-        drawToCanvas(indexToScreen(indexX, indexY),value);
+    iterate2dArray(NextFields, (indexX, indexY, value) => {
+        drawToCanvas(getPosByIndex(indexX, indexY),value);
     })
 
     CurrentFields = NextFields;
@@ -181,8 +207,8 @@ let resetGame = function() {
 
 canvas.addEventListener('click', function (event) {
 
-    let pos = normaliseScreen(event.offsetX, event.offsetY);
-    let index = screenToIndex(pos.x, pos.y);
+    let pos = getNormalisedScreenPos(event.offsetX, event.offsetY);
+    let index = getIndexByScreen(pos.x, pos.y);
 
     switch (CurrentFields[index.y][index.x]) {
         case alive:
@@ -196,8 +222,8 @@ canvas.addEventListener('click', function (event) {
     }
     clearCanvas();
     
-    transformArray(CurrentFields, (x, y, value) => {
-        let indexPos = indexToScreen(x, y);    
+    iterate2dArray(CurrentFields, (x, y, value) => {
+        let indexPos = getPosByIndex(x, y);    
         drawToCanvas(indexPos, value);
     });
 
