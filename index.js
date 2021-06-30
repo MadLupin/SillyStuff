@@ -15,7 +15,7 @@ const fieldHeigth = 25;
 let interval;
 const intervalTime = 200;
 
-let CurrentFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));
+let CurrentFields = getNewArray();
 let totalAliveCount = 0;
 
 let context = canvas.getContext("2d");
@@ -28,7 +28,7 @@ function getIndexByScreen(x,y) {
 }
 
 function getHeightFieldCount() {
-    return canvas.height / fieldHeigth
+    return canvas.height / fieldHeigth;
 }
 
 function getWidthFieldCount() {
@@ -43,7 +43,7 @@ function getNormalisedScreenPos(x,y) {
 }
 
 function getNewArray() {
-    return new Array(getHeightFieldCount).fill(dead).map(() => new Array(getWidthFieldCount).fill(dead));
+    return new Array(getHeightFieldCount()).fill(dead).map(() => new Array(getWidthFieldCount()).fill(dead));
 }
 
 function getPosByIndex(x,y) {
@@ -80,6 +80,7 @@ function countAliveNeighbours(arr, x, y) {
             ((offset[0] + x) > 0) && ((offset[0] + x) < arr[y].length)) {
             
             let val = arr[y + offset[1]][x + offset[0]];
+
             if (val == alive) {
                 count++;
             }
@@ -162,26 +163,28 @@ function clearCanvas(){
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+function normalize(aValue, aNormalizer) {
+    return Math.floor(aValue / aNormalizer) * aNormalizer;
+}
+
 function resizeCanvas(){
-    const resizeThreshold = [1200, 800, 500, 200];
-    const resized = false;
+    let newWidth, newHeight;
+    const canvasMargine = 0.3;
+    const roundTo100 = 100;
 
-    for (let i = 0; i < resizeThreshold.length; i++) {
-        const element = resizeThreshold[i];
-        if (element <= window.innerWidth) {
-            canvas.width = element * 0.7;
-            canvas.height = element * 0.7;
-            resized = true;
-            break;
-        }
+    newWidth = normalize(window.innerWidth, roundTo100) - normalize(window.innerWidth * canvasMargine, roundTo100);
+    newHeight = newWidth;
+
+    if ((canvas.width != newWidth) && (canvas.height != newHeight)) {
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+
+            CurrentFields = getNewArray();
+            iterate2dArray(CurrentFields, (indexX, indexY, value) => {
+                drawToCanvas(getPosByIndex(indexX, indexY),value)
+            });       
+            drawGrid();
     }
-
-    if (resized) {
-        drawGrid();
-        iterate2dArray(CurrentFields, (indexX, indexY, value) => {
-            drawToCanvas(getPosByIndex(indexX, indexY),value)
-        })
-    } 
 }
 
 let startGame = function(){
@@ -195,13 +198,11 @@ let endGame = function() {
 let resetGame = function() {
     endGame();
         
-    let NextFields = new Array(fieldCountHeigth).fill(dead).map(() => new Array(fieldCountWidth).fill(dead));;
+    CurrentFields = getNewArray();
    
-    iterate2dArray(NextFields, (indexX, indexY, value) => {
+    iterate2dArray(CurrentFields, (indexX, indexY, value) => {
         drawToCanvas(getPosByIndex(indexX, indexY),value);
-    })
-
-    CurrentFields = NextFields;
+    });
     drawGrid();    
 }
 
@@ -228,8 +229,6 @@ canvas.addEventListener('click', function (event) {
     });
 
     drawGrid();
-
-    console.log(CurrentFields);
 });
 
 startButton.addEventListener('click', startGame);
