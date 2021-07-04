@@ -175,7 +175,7 @@ function resizeCanvas(){
     newWidth = normalize(window.innerWidth, roundTo100) - normalize(window.innerWidth * canvasMargine, roundTo100);
     newHeight = newWidth;
 
-    if ((canvas.width != newWidth) && (canvas.height != newHeight)) {
+    if ((canvas.width != newWidth) && (canvas.height != newHeight) && (canvas.height <= window.innerHeight * 0.4)) {
             canvas.width = newWidth;
             canvas.height = newHeight;
 
