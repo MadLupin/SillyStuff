@@ -18,7 +18,7 @@ class GameOfLife {
 
     constructor (grid) {
         this.grid = grid;
-        this.grid.onState = getStateColor;
+        this.grid.onState = this.getStateColor;
         this.totalAliveCount = 0;
     }
 
@@ -34,13 +34,12 @@ class GameOfLife {
 
         if (this.ended) return false;
 
-        let NextFields = this.grid.getNewArray();
+        let NextFields = this.grid.getFieldsArray(this.dead);
         let CurrentFields = this.grid.fields;
         this.totalAliveCount = 0;
-        let redrawList = [];
 
         this.grid.forEachField((indexX, indexY, value) => {
-            let count = countAliveNeighbours(CurrentFields, indexX, indexY);  
+            let count = this.countAliveNeighbours(CurrentFields, indexX, indexY);  
 
             if (value == this.alive) {
                 if (count < 2) {    
@@ -59,17 +58,13 @@ class GameOfLife {
             }               
 
             if (value != NextFields[indexY][indexX]) {
-                redrawList.push({y : indexY, x : indexX, newValue : NextFields[indexY][indexX]});
+                this.grid.drawRect(grid.getRectByIndex(new Index(indexY, indexX)), value);
             }
         });
 
         this.grid.fields = NextFields;
-    
-        redrawList.forEach((index) => {
-            this.grid.drawRect(grid.getRectByIndex(index), index.newValue);
-        });
 
-        if (totalAliveCount == 0) {
+        if (this.totalAliveCount == 0) {
             this.ended = true;
         }        
         return true;

@@ -4,47 +4,42 @@ function normalize(aValue, aNormalizer) {
 }
 
 class Index {
-    constructor(rect) {
-        this.x = rect.x / rect.width;
-        this.y = rect.y / rect.width;
-    }
-    
-    constructor(x,y) {
-        this.x = x;
-        this.y = y;
+    constructor(args) {
+        if (args.width) {
+            this.x = args.x / args.width;
+            this.y = args.y / args.width;
+        } else {
+            this.x = args.x;
+            this.y = args.y;
+        } 
     }
 }
 
 class Rect {
 
-    constructor(index, width) {
-        this.x = index.x * width;
-        this.y = indey.y * width;
-        this.width = width;
-    }
-
-    constructor(x, y, width) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-    }
-
-    constructor(x, y, width, norm) {
-        if (norm) {
-            this.x = normalize(x, norm);
-            this.y = normalize(y, norm);
+    constructor(args) {
+        if (args.x && args.y && args.width) {
+            if (args.norm) {
+                this.x = normalize(args.x, args.norm);
+                this.y = normalize(args.y, args.norm);
+            } else {
+                this.x = args.x;
+                this.y = args.y;
+            }
+            this.width = args.width;
         } else {
-            this.x = x;
-            this.y = y;
+            if (args.index && args.width) {
+                this.x = args.index.x * args.width;
+                this.y = args.index.y * args.width;
+                this.width = args.width;
+            }
         }
-
-        this.width = width;
     }
 
-    get Index() {
-        return new Index(
-            this.x / this.width, 
-            this.y / this.width)
+    getIndex() {
+        return new Index({
+            x: this.x / this.width, 
+            y : this.y / this.width})
     }
 }
 
@@ -53,12 +48,12 @@ class Grid {
     LineColor = 'darkgrey';
     defaultFieldColor = 'lightgrey';
 
-    constructor(aCanvas, aFieldWidth, onState) {
+    constructor(aCanvas, aFieldWidth, onDrawValue) {
         this.canvas = aCanvas;
         this.fieldWidth = aFieldWidth;
         this.context = canvas.getContext("2d");
-        this.fields = getFieldsArray();
-        this.onState = onState;
+        this.fields = this.getFieldsArray();
+        this.onDrawValue = onDrawValue;
     }
 
     clear() {
@@ -66,25 +61,31 @@ class Grid {
     }
 
     getFieldsArray(aDefaultState = 0) {
-        let FieldCount = getFieldCount();
-        return new Array(FieldCount).fill(aDefaultState)
-            .forEach(new Array(FieldCount).fill(aDefaultState));
+        let FieldCount = this.getFieldCount();
+
+        let arr = new Array(FieldCount).fill(aDefaultState);
+
+        for (let i = 0; i < arr.length; i++) {
+            arr[i] = new Array(FieldCount).fill(aDefaultState);            
+        }
+
+        return arr;
     }
 
     getRectByIndex(aIndex) {
-        return new Rect(aIndex, this.fieldWidth);
+        return new Rect({index : aIndex, width : this.fieldWidth});
     }
 
     getRectByPos(x, y) {
-        return new Rect(x, y, this.fieldWidth, this.fieldWidth);
+        return new Rect({x: x, y :y, width: this.fieldWidth, norm : this.fieldWidth});
     }
 
     getIndexByRect(rect) {
-        return new Index(rect);
+        return new Index({rect});
     }
 
     getIndexByPos(x, y) {
-        return new Rect(x, y, this.fieldWidth, this.fieldWidth).Index;
+        return new Rect({x: x,y: y, width: this.fieldWidth, norm: this.fieldWidth}).getIndex();
     }
   
     getFieldCount() {
@@ -106,7 +107,7 @@ class Grid {
     
     
         this.context.beginPath();
-        for (let y = 0; y <= h; y += fieldHeigth) {
+        for (let y = 0; y <= w; y += this.fieldWidth) {
             this.context.moveTo(0, y);
             this.context.lineTo(w, y);
         }
@@ -117,11 +118,11 @@ class Grid {
     }
 
     forEachField(onItem){        
-        this.fields.forEach((_arr, indexY) => {
-            arr[indexY].forEach((value, indexX) => {
-                return onItem(indexX, indexY, value);
-            })
-        });        
+        for (let i = 0; i < this.fields.length; i++) {
+            for (let j = 0; i < this.fields[i].length; j++){
+                return onItem(i, j, this.fields[i][j]);
+            }
+        }       
     }
 
     normalize(aValue, aNormalizer) {
@@ -129,36 +130,36 @@ class Grid {
     }
 
     resizeGrid(){
-        let newWidth, newHeight;
-        const canvasMargine = 0.3;
-        const roundTo100 = 100;
+        // let newWidth, newHeight;
+        // const canvasMargine = 0.3;
+        // const roundTo100 = 100;
     
-        newWidth = normalize(window.innerWidth, roundTo100) - normalize(window.innerWidth * canvasMargine, roundTo100);
-        newHeight = newWidth;
+        // newWidth = normalize(window.innerWidth, roundTo100) - normalize(window.innerWidth * canvasMargine, roundTo100);
+        // newHeight = newWidth;
     
-        if ((canvas.width != newWidth) && (canvas.height != newHeight) && (canvas.height <= window.innerHeight * 0.4)) {
-                canvas.width = newWidth;
-                canvas.height = newHeight;
+        // if ((canvas.width != newWidth) && (canvas.height != newHeight) && (canvas.height <= window.innerHeight * 0.4)) {
+        //         canvas.width = newWidth;
+        //         canvas.height = newHeight;
 
-                this.fields = getFieldsArray();
-                this.forEachField((indexX, indexY, value) => {
-                    this.drawRect(this.getRectByIndex(new Index(indexX, indexY), value));
-                });       
-                drawGridLines();
-        }
+        //         this.fields = getFieldsArray();
+        //         this.forEachField((indexX, indexY, value) => {
+        //             this.drawRect(this.getRectByIndex(new Index({x: indexX, y :indexY}), value));
+        //         });       
+        //         drawGridLines();
+        // }
     }
 
     redraw() {
         this.forEachField((x, y, value) => {
-            this.drawRect(this.getRectByIndex(new Index(x, y), value));
+            this.drawRect(this.getRectByIndex(new Index({x, y}), value));
         });
         this.drawGridLines();
     };
 
     drawRect(aRect, value) {
-        let color = this.onState(value);
+        let color = this.onDrawValue(value);
 
-        if (color === unassigned) {
+        if (color === undefined) {
             color = this.defaultFieldColor;
         }
 
